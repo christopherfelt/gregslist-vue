@@ -1,77 +1,80 @@
 <template>
-  <div class="cars-component container">
+  <div class="houses-component container">
     <div class="row">
       <div class="col">
         <button
           type="button"
           class="btn btn-success"
-          v-if="!carForm"
-          @click="carForm = !carForm"
+          v-if="!houseForm"
+          @click="houseForm = !houseForm"
         >
-          Add Car
+          Add House
         </button>
         <button
           type="button"
           class="btn btn-danger"
-          v-if="carForm"
+          v-if="houseForm"
           @click="
-            carForm = !carForm;
+            houseForm = !houseForm;
             newCar = {};
           "
         >
           Cancel
         </button>
-        <form class="form-inline" v-if="carForm" @submit.prevent="createCar">
+        <form
+          class="form-inline"
+          v-if="houseForm"
+          @submit.prevent="createHouse()"
+        >
           <form-comp
-            v-for="input in carFormInputs"
+            v-for="input in houseFormInputs"
             :key="input.name"
             :formInputProp="input"
             v-on:childToParent="updateParentData"
           />
-          <button type="submit" class="btn btn-outline-success">Submit</button>
+          <button type="submit" class="btn btn-outline-success">submit</button>
         </form>
       </div>
     </div>
     <div class="row">
-      <car v-for="car in cars" :key="car._id" :carProp="car" />
+      <house v-for="house in houses" :key="house.id" :houseProp="house" />
     </div>
   </div>
 </template>
 
 <script>
-import Car from "./CarComponent.vue";
 import FormComp from "./FormComponent.vue";
+import House from "./HouseComponent.vue";
 
 export default {
-  name: "Cars",
-  // NOTE mounted fires at the first startup of the template being added to the page
+  name: "Houses",
   mounted() {
-    this.$store.dispatch("getAllCars");
+    this.$store.dispatch("getAllHouses");
   },
   data() {
     return {
-      newCar: {},
-      carForm: false,
-      carFormInputs: [
-        { name: "Make", type: "text" },
-        { name: "Model", type: "text" },
-        { name: "Price", type: "number" },
+      houseForm: false,
+      newHouse: {},
+      houseFormInputs: [
+        { name: "Bedrooms", type: "number" },
+        { name: "Bathrooms", type: "number" },
+        { name: "Levels", type: "number" },
         { name: "Year", type: "number" },
         { name: "Description", type: "text" },
         { name: "imgUrl", type: "text" },
+        { name: "Price", type: "number" },
       ],
-      fromChild: "",
     };
   },
   computed: {
-    cars() {
-      return this.$store.state.cars;
+    houses() {
+      return this.$store.state.houses;
     },
   },
   methods: {
-    createCar() {
-      this.$store.dispatch("createCar", { ...this.newCar });
-      this.newCar = {};
+    createHouse() {
+      this.$store.dispatch("createHouse", { ...this.newHouse });
+      this.newHouse = {};
     },
     updateParentData(childInput) {
       const fromChild = childInput;
@@ -80,17 +83,17 @@ export default {
           ? parseInt(childInput.input)
           : childInput.input;
       if (childInput.name != "imgUrl") {
-        this.newCar[childInput.name.toLowerCase()] = childInputType;
+        this.newHouse[childInput.name.toLowerCase()] = childInputType;
       } else {
-        this.newCar[childInput.name] = childInputType;
+        this.newHouse[childInput.name] = childInputType;
       }
     },
   },
   components: {
-    Car,
     FormComp,
+    House,
   },
 };
 </script>
 
-<style></style>
+<style scoped></style>
